@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <bitset> 
 #include <fstream>
 #include <set>
 using namespace std; //on peut?
@@ -72,16 +73,21 @@ int main(int argc, char *argv[])
 		cout << "Impossible to open the file" << endl;
 		return 1;
 	}
-	
-    char sequence[80];
-    char sequenc[80];
-    char sequen[80];
-    database_file.read(sequence,80);
-	database_file.read(sequenc,80);
-	database_file.read(sequen,80);
-    cout << sequen << endl;
-    cout << sequence << endl;
-    cout << sequenc << endl;
+	/*
+    while(databse_file.read((char*)&obj, sizeof(obj)))
+    {
+        if(obj.retAdmno() == n)
+        {
+            obj.showData(); //fonction qui va print le nom de la query
+        }
+    }*/
+    std::bitset<8> c;
+    while(!database_file.eof())
+		{
+			c = database_file.get();
+			if(!database_file.eof())
+			//cout << c; ca va imprimer toute la database si on décommente aha
+		}
 	database_file.close();
 	return 0;
 }
