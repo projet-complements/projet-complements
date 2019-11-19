@@ -1,14 +1,19 @@
-#include <letter.h>
+#include "letter.h" //faut inclure le fichier .h pour avoir la declaration de toute la classe!
+/* POUR COMPILER (on compile d'abord le fichier de la classe, puis on compile tout ensemble pour pouvoir les utiliser entre eux!)
+ * g++ letter.cpp -c
+ * g++ letter.o match.cpp -o -Wall match
+ * */
 
-Letter::Letter(){
-	name = "";
+
+Letter::Letter(std::string n){ //constructeur de la classe
+	name = n;
 }
 
-std::bitset<8> Letter::binary_conversion(Letter name){
+std::bitset<8> Letter::binary_conversion(){
 	//function returning the binary number associated to the letter given in parameter
-	std::bitset<8> n;
+	std::bitset<8> n; //on cree la variable ou on stocke le nombre binaire
 	if(name=="A"){
-		n=0b00000001;
+		n=0b00000001; //0b c'est pour transformer en binaire
 	}
 	else if(name=="B"){
 		n=0b00000010;
@@ -85,7 +90,8 @@ std::bitset<8> Letter::binary_conversion(Letter name){
 	else if(name=="Z"){
 		n=0b00010111;
 	}
-	return n;
+	return n; //renvoie le binaire
 }
+
 
 

@@ -1,14 +1,14 @@
 #include <string>
 #include <iostream>
-#include <bitset> 
+#include <bitset>
+using namespace std;
 
 class Letter
 {
 private:
-	string Name;
+	string name; //attribut de letter
 	
 public:
-	Letter(); //constructeur	
-	std::bitset<8> binary_conversion(Letter name);
-
+	Letter(std::string name); //constructeur	
+	std::bitset<8> binary_conversion(); //convertisseur
 };
