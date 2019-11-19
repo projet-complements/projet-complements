@@ -3,14 +3,14 @@
 #include <bitset> 
 #include <fstream>
 #include <set>
-using namespace std; //on peut?
+using namespace std;
 
 
-// Program prints the name of the exact sequence in the database:equality test between the query and the whole database
-// NB:the query can have a fake name, makefile to do too
-// Parameter: argv[1]=query (FASTA), argv[2]=database (BLAST)
-// pour compiler : g++ match.cpp -o match -Wall
-// pour executer : ./match fichier1 fichier2
+/* Program prints the name of the exact sequence in the database:equality test between the query and the whole database
+ * NB:the query can have a fake name, makefile to do too
+ * Parameter: argv[1]=query (FASTA), argv[2]=database (BLAST)
+ * pour compiler : g++ match.cpp -o match -Wall
+ * pour executer : ./match fichier1 fichier2*/
 
 int main(int argc, char *argv[])
 {
@@ -22,24 +22,30 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 	
-	set<string> database; //set of all the sequences from the database
-	string query;
+
+	
+	/*TO DO:
+	 * on ignore la première ligne
+	 * on lit ligne par ligne, puis divise en caractère [CEDRIC]
+	 * (pour ça, deux solutions : soit on lit lettre par lettre, soit on envoie une ligne à la fonction, qui découpe elle-même
+	 * lettre par lettre)
+	 * grâce a la classe 'Letter', qui a pour attribut 'Name', on utilise une fonction 'BinaryConversion(Letter)'[HA MY]
+	 * renvoie un bitset<8>, cad la forme binaire de la lettre[HA MY]
+	 * on stocke chaque binaire dans query (vecteur? tableau?)[CEDRIC]
+	*/
 	
 	
-	// FASTA: la requete est donnee sous forme fasta cad qu'on a >l'identifiant, le commentaire puis toute la séquence
-	// doit donc ignorer l'identifiant car peut être faux
-	// 80 charact par ligne? à verifier
-	// on prend donc ligne par ligne : stocke dans un string?
+	// open the fasta file with the query
 	ifstream query_file (argv[1]);
 	if( !query_file.is_open() )
 	{
 		cout << "Impossible to open the file" << endl;
 		return 1;//retourne 1 en cas d'erreur
 	}
-	
-	// on contient tout dans un string
-	/*string line, name, content;
-    while( getline(query_file,line).good() ){ 
+
+	/* CODE POUR LIRE LE FICHIER FASTA LIGNE PAR LIGNE
+	string line, name, content;
+    while( getline(query_file,line).good() ){ //lire ligne par ligne
         if(line.empty() || line[0] == '>' ){ // lecture du fichier 
             if( !name.empty() ){ // lire le fichier 
                 cout << name << " : " << content << endl;
@@ -63,31 +69,60 @@ int main(int argc, char *argv[])
     }*/
 	query_file.close();
 
+
+
+	// open the sequence BLAST file
 	string argv2 = argv[2];
 	argv2+=".psq";
-
-	// BLAST: index=info on database, sequence=info on residues, header=info on header of sequence
 	ifstream database_file (argv2, ios::in | ios::binary);
 	if( !database_file.is_open() )
 	{
 		cout << "Impossible to open the file" << endl;
 		return 1;
 	}
-	/*
-    while(databse_file.read((char*)&obj, sizeof(obj)))
-    {
-        if(obj.retAdmno() == n)
-        {
-            obj.showData(); //fonction qui va print le nom de la query
-        }
-    }*/
-    std::bitset<8> c;
+
+	/* on a stocké la query, maintenant on lit ligne par ligne le fichier .psq pour comparer avec la query
+	 * une fois qu'on trouve la bonne sequence, on ouvre le fichier index et on en retire l'offset
+	 * (comprendre comment on manipule les offsets/comment le fichier index est fait)
+	 * puis, avec offset header, on trouve le nom de la proteine dans le fichier header
+	 * (comprendre comment est constitué le fichier header)
+	 * */
+	 
+   std::bitset<8> c;
     while(!database_file.eof())
 		{
 			c = database_file.get();
 			if(!database_file.eof())
-			//cout << c; ca va imprimer toute la database si on décommente aha
+			//cout << c; imprimer toute la database
+			//il faut couper la sequence quand on a un bit nul cad 00000000 (8 bits)
+			//comparer la sequence coupee avec la query transformee en binaire
+
+        
+        
+	/*CODE POUR BOUCLE DE COMPARAISON (pas encore testé):
+	std::bitset<8> c;
+	while(!database_file.eof() && database_file.get()!=query)
+		{
+			c = database_file.get();
+			if(!database_file.eof()){
+				// manip avec offset etc.
+			}
 		}
+	*/
+		
+		
+	/*	CODE POUR OUVRIR LE FICHIER PHR
+	char c;
+	while(!database_file.eof())
+	{
+		c = database_file.get();
+		if(!database_file.eof()){
+		cout << c;
+		}
+	}*/
+	
+	
+	
 	database_file.close();
 	return 0;
 }
