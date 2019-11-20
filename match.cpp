@@ -3,6 +3,7 @@
 #include <bitset> 
 #include <fstream>
 #include <set>
+#include "letter.h"
 using namespace std;
 
 
@@ -26,12 +27,10 @@ int main(int argc, char *argv[])
 	
 	/*TO DO:
 	 * on ignore la première ligne
-	 * on lit ligne par ligne, puis divise en caractère [CEDRIC]
-	 * (pour ça, deux solutions : soit on lit lettre par lettre, soit on envoie une ligne à la fonction, qui découpe elle-même
-	 * lettre par lettre)
-	 * grâce a la classe 'Letter', qui a pour attribut 'Name', on utilise une fonction 'BinaryConversion(Letter)'[HA MY]
-	 * renvoie un bitset<8>, cad la forme binaire de la lettre[HA MY]
-	 * on stocke chaque binaire dans query (vecteur? tableau?)[CEDRIC]
+	 * on lit ligne par ligne, puis divise en caractère
+	 * grâce a la classe 'Letter', qui a pour attribut 'Name', on utilise une fonction 'BinaryConversion(Letter)'
+	 * renvoie un bitset<8>, cad la forme binaire de la lettre
+	 * on stocke chaque binaire dans query (vecteur)
 	*/
 	
 	
@@ -42,31 +41,23 @@ int main(int argc, char *argv[])
 		cout << "Impossible to open the file" << endl;
 		return 1;//retourne 1 en cas d'erreur
 	}
-
-	/* CODE POUR LIRE LE FICHIER FASTA LIGNE PAR LIGNE
-	string line, name, content;
-    while( getline(query_file,line).good() ){ //lire ligne par ligne
-        if(line.empty() || line[0] == '>' ){ // lecture du fichier 
-            if( !name.empty() ){ // lire le fichier 
-                cout << name << " : " << content << endl;
-                name.clear();
-            }
-            if( !line.empty() ){
-                name = line.substr(1);
-            }
-            content.clear();
-        } else if( !name.empty() ){
-            if( line.find(' ') != std::string::npos ){ // en cas d'erreur d'espacement de sequence 
-                name.clear();
-                content.clear();
-            } else {
-                content += line;
-            }
-        }
-    }
-    if( !name.empty() ){ // Print out les fichies 
-		cout << name << " : " << content << endl;
-    }*/
+	string str;
+	
+	// ignore first line
+    std::getline(query_file, str);
+    
+    // c is the character in the file, s is the name of the Letter created
+	char c;
+	string s = "";
+		while(query_file >> c)
+		{	
+			s=c;
+			Letter* lettre = new Letter(s);
+			std::bitset<8> bit;
+			bit = lettre->binary_conversion();
+			cout << c << endl;
+			cout << bit << endl;
+		}
 	query_file.close();
 
 
@@ -88,14 +79,14 @@ int main(int argc, char *argv[])
 	 * (comprendre comment est constitué le fichier header)
 	 * */
 	 
-   std::bitset<8> c;
+   /*std::bitset<8> b;
     while(!database_file.eof())
 		{
-			c = database_file.get();
+			b = database_file.get();
 			if(!database_file.eof())
-			//cout << c; imprimer toute la database
+			//cout << b; imprimer toute la database
 			//il faut couper la sequence quand on a un bit nul cad 00000000 (8 bits)
-			//comparer la sequence coupee avec la query transformee en binaire
+			//comparer la sequence coupee avec la query transformee en binaire*/
 
         
         
@@ -125,4 +116,5 @@ int main(int argc, char *argv[])
 	
 	database_file.close();
 	return 0;
+	
 }
