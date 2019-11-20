@@ -1,11 +1,13 @@
 #include "letter.h" //faut inclure le fichier .h pour avoir la declaration de toute la classe!
 /* POUR COMPILER (on compile d'abord le fichier de la classe, puis on compile tout ensemble pour pouvoir les utiliser entre eux!)
  * g++ letter.cpp -c
- * g++ letter.o match.cpp -o -Wall match
+ * g++ letter.o match.cpp -o match
+ * mais enft avec le tp6 j'ai vu qu'on pouvait faire un dictionnaire (avec map) et pe que c'est plus rapide
+ * et efficace que pleins de if ...
  * */
 
 
-Letter::Letter(std::string n){ //constructeur de la classe
+Letter::Letter(string n){ //constructeur de la classe
 	name = n;
 }
 

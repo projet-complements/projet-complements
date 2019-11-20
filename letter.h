@@ -9,6 +9,6 @@ private:
 	string name; //attribut de letter
 	
 public:
-	Letter(std::string name); //constructeur	
+	Letter(string name); //constructeur	
 	std::bitset<8> binary_conversion(); //convertisseur
 };
