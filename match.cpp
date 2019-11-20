@@ -54,9 +54,10 @@ int main(int argc, char *argv[])
 			s=c;
 			Letter* lettre = new Letter(s);
 			std::bitset<8> bit;
+			// bit is the binary number associated to the letter read
 			bit = lettre->binary_conversion();
-			cout << c << endl;
-			cout << bit << endl;
+			
+			// STOCKER DANS UN VECTEUR CONTENANT DES BITS (std::bitset<8) TOUS LES BITS
 		}
 	query_file.close();
 
@@ -79,14 +80,14 @@ int main(int argc, char *argv[])
 	 * (comprendre comment est constitué le fichier header)
 	 * */
 	 
-   /*std::bitset<8> b;
+   std::bitset<8> b;
     while(!database_file.eof())
 		{
 			b = database_file.get();
 			if(!database_file.eof())
 			//cout << b; imprimer toute la database
 			//il faut couper la sequence quand on a un bit nul cad 00000000 (8 bits)
-			//comparer la sequence coupee avec la query transformee en binaire*/
+			//comparer la sequence coupee avec la query transformee en binaire
 
         
         
