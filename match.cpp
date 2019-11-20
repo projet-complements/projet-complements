@@ -4,13 +4,14 @@
 #include <fstream>
 #include <set>
 #include "letter.h"
+#include <vector>
 using namespace std;
 
 
 /* Program prints the name of the exact sequence in the database:equality test between the query and the whole database
  * NB:the query can have a fake name, makefile to do too
  * Parameter: argv[1]=query (FASTA), argv[2]=database (BLAST)
- * pour compiler : g++ match.cpp -o match -Wall
+ * pour compiler : g++ match.cpp -o match 
  * pour executer : ./match fichier1 fichier2*/
 
 int main(int argc, char *argv[])
@@ -49,15 +50,24 @@ int main(int argc, char *argv[])
     // c is the character in the file, s is the name of the Letter created
 	char c;
 	string s = "";
+	std::vector<bitset<8>> tableau; //crée un tableau de type bitset<8> vide
 		while(query_file >> c)
 		{	
 			s=c;
 			Letter* lettre = new Letter(s);
 			std::bitset<8> bit;
-			// bit is the binary number associated to the letter read
 			bit = lettre->binary_conversion();
-			
-			// STOCKER DANS UN VECTEUR CONTENANT DES BITS (std::bitset<8) TOUS LES BITS
+			cout << c << endl;
+			cout << bit << endl;
+			tableau.push_back(bit); //rajoute tous les chiffres en binaire dans le tableau
+			//cout << tableau << endl;
+		}
+		//permet de vérifier en print les 4 derniers elements du tableau
+		cout << tableau.size() << endl;
+		std::bitset<8> sequence;
+		for (int i=1206; i<tableau.size(); i++){
+			sequence = tableau[i];
+			cout << sequence << endl;
 		}
 	query_file.close();
 
@@ -80,14 +90,14 @@ int main(int argc, char *argv[])
 	 * (comprendre comment est constitué le fichier header)
 	 * */
 	 
-   std::bitset<8> b;
+   /*std::bitset<8> b;
     while(!database_file.eof())
 		{
 			b = database_file.get();
 			if(!database_file.eof())
 			//cout << b; imprimer toute la database
 			//il faut couper la sequence quand on a un bit nul cad 00000000 (8 bits)
-			//comparer la sequence coupee avec la query transformee en binaire
+			//comparer la sequence coupee avec la query transformee en binaire*/
 
         
         
