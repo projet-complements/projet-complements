@@ -2,9 +2,10 @@
 #include <string>
 #include <bitset> 
 #include <fstream>
-#include <set>
-#include "letter.h"
 #include <vector>
+#include <cstdint>
+#include <byteswap.h>
+#include "letter.h"
 using namespace std;
 
 
@@ -54,11 +55,81 @@ int main(int argc, char *argv[])
 
 
 
-	// open the sequence BLAST file
+	// open the index file
 	
 	string argv2 = argv[2];
-	argv2+=".psq";
-	ifstream database_file (argv2, ios::in | ios::binary);
+	argv2+=".pin";
+	ifstream index_file (argv2, ios::in | ios::binary);
+	if( !index_file.is_open() )
+	{
+		cout << "Impossible to open the file" << endl;
+		return 1;
+	}
+	
+	// initialize the variables to save the information
+	int32_t version,database_type, title_length, timestp_length,nbseq, maxseq;
+	int64_t residuecount;
+
+	// read the version
+	index_file.read((char*)&version, sizeof(int32_t));
+	version = __bswap_32(version);
+	
+	// read the databasetype
+	index_file.read((char*)&database_type, sizeof(int32_t));
+	database_type= __bswap_32(database_type);
+	
+	// read the title length
+	index_file.read((char*)&title_length, sizeof(int32_t));
+	title_length =__bswap_32(title_length);
+	
+	// read title
+	char title[title_length];
+	index_file.read((char*)title, sizeof(char)*(title_length));
+	title[title_length]=0;
+	
+	// read the timestamp length
+	index_file.read((char*)&timestp_length, sizeof(int32_t));
+	timestp_length=__bswap_32(timestp_length);
+	
+	// read the timestamp 
+	char timestp[timestp_length];
+	index_file.read((char*)timestp, sizeof(char)*(timestp_length));
+	timestp[timestp_length]=0;
+
+	
+	// read the number of sequences (N)
+	index_file.read((char*)&nbseq, sizeof(int32_t));
+	nbseq=__bswap_32(nbseq);
+	
+	// read the residue count
+	index_file.read((char*)&residuecount, sizeof(int64_t));
+	
+	// read the maximum sequence
+	index_file.read((char*)&maxseq, sizeof(int32_t));
+	maxseq=__bswap_32(maxseq);
+	
+	// read the offsets
+	int32_t header_offset[nbseq+1];
+	int32_t sequence_offset[nbseq+1];
+
+	index_file.read((char*)&header_offset[0], sizeof(int32_t)*(nbseq+1));
+	index_file.read((char*)&sequence_offset[0], sizeof(int32_t)*(nbseq+1));
+	for(int i = 0; i < nbseq+1; i++){
+		header_offset[i] = __bswap_32(header_offset[i]);
+		sequence_offset[i] = __bswap_32(sequence_offset[i]);
+	}
+	index_file.close();
+	
+	
+	
+	cout << sequence_offset[0] << endl;
+	cout << sequence_offset[1] << endl;
+	
+	// open the sequence file
+	
+	string argv3 = argv[2];
+	argv3+=".psq";
+	ifstream database_file (argv3, ios::in | ios::binary);
 	if( !database_file.is_open() )
 	{
 		cout << "Impossible to open the file" << endl;
@@ -70,12 +141,11 @@ int main(int argc, char *argv[])
 	
    std::bitset<8> b = 0b10000000;
    std::vector< bitset<8> > tmp;
-   //on initialise un compteur de bits
-   int count = 0;
+   int index;
+
    // parse the whole database
-    while( !database_file.eof() ){
+   while( !database_file.eof() ){
 		b = database_file.get();
-		// if the bit read isn't null, we add it to the sequence
 		if (b != 0b00000000){ 
 			tmp.push_back(b);
 		}
@@ -83,8 +153,6 @@ int main(int argc, char *argv[])
 		// b is null, the sequence ended and we can compare the two vectors 
 		
 		else{
-			//on incrémente le compteur de la taille du tmp considéré + les 8 zéros
-			count += tmp.size()+8;
 			// check if the two sequences are the same size, else we don't even look
 			if (query.size() == tmp.size()){
 				// check if every letter is the same
@@ -93,7 +161,8 @@ int main(int argc, char *argv[])
 					// if we are at the end of the vector, every letter is the same and we break the while
 					if (i == (tmp.size()-1)){
 						cout << "Found the sequence!" << endl;
-						cout << "Le nombre de bits à cet endroit est de:" << count-10 << endl; // on imprime le count-10 pour être avant la fin de la séquence
+						index=database_file.tellg();
+						cout << index << endl;
 						breaking_out=1;
 						break;
 					}
@@ -114,21 +183,20 @@ int main(int argc, char *argv[])
 	}
 
 	database_file.close();
+	int diff;
+	 for(int i = 0; i < nbseq+1; i++){
+		 if(sequence_offset[i] == (index+1)){
+			 cout << i << endl;
+			 diff = sequence_offset[i+1]-sequence_offset[i];
+			 cout << diff << endl;
+			 cout << sizeof(query) << endl;}
 
-	/* TO DO:
-	 * on va faire un compteur pour savoir à quel nombre de bits on est
-	 * avec ce nombre de bits, on se repère dans le tableau offset sequence
-	 * offset sequence donne, à chaque indice, à cb de bits on est
-	 * l'indice dans les deux tableaux offset est le mm
-	 * simple title est le nom de la sequence ds le fichier header
-	 * */
+	}
 	 
-	 
-	 
-	/*	CODE POUR OUVRIR LE FICHIER PHR
-	string argv3 = argv[3];
-	argv3+=".phr";
-	ifstream header_file (argv3, ios::in | ios::binary);
+	/* CODE POUR OUVRIR LE FICHIER PHR
+	string argv4 = argv[2];
+	argv4+=".phr";
+	ifstream header_file (argv4, ios::in | ios::binary);
 	if( !header_file.is_open() )
 	{
 		cout << "Impossible to open the file" << endl;
@@ -136,31 +204,13 @@ int main(int argc, char *argv[])
 	}
 	char t;
 	
-	while(!header_file.eof())
-	{
-		t = header_file.get();
-		if(!header_file.eof()){
-		cout << t;
-		}
-	}*/
-	/*
-	string argv4 = argv[4];
-	argv4+=".pin";
-	ifstream index_file (argv4, ios::in | ios::binary);
-	if( !index_file.is_open() )
-	{
-		cout << "Impossible to open the file" << endl;
-		return 1;
-	}
-	std::bitset<32> t;
-	
-	while(!index_file.eof())
-	{
-		t = index_file.get();
-		if(!index_file.eof()){
-		cout << t << endl;
-		}
-	}
-	return 0;
+	char blast_dfline_set, titleOfSequence;
+	header_file.seekg(index);
+	int reading;
+	header_file.read(blast_dfline_set,1);
+
 	*/
+	
+	return 0;
+	
 }
