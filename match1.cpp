@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <byteswap.h>
 #include "letter.h"
-#include <bits/stdc++.h> 
+#include <stdlib.h>
 using namespace std;
 
 
@@ -206,7 +206,7 @@ int main(int argc, char *argv[])
 	//CODE POUR LIRE LE TITRE DE LA PROTEINE
 	int8_t reading;
 	//normalement prend index comme argument, ici test pour 1
-	header_file.seekg(1);
+	header_file.seekg(index);
 	header_file.read((char*)&reading, sizeof(uint8_t));
 	//on cherche la position du début du titre, commence avec 1A
 	while(reading!=uint8_t(0x1A)){
@@ -220,15 +220,8 @@ int main(int argc, char *argv[])
 	//on cherche la position de fin du titre, finit avec 0000
 	while(reading!=uint8_t(0x0000)){
 		header_file.read((char*)&reading, sizeof(uint8_t));
-		cout << "on cherche la fin" << endl;
+		cout << reading;
 	}
-	cout << hex << int(reading) << endl;
-	int end = header_file.tellg(); //on stock la position dans end
-	cout << "position end" << end << endl;
-	int length = (end -begin); //on stock la longueur du titre
-	cout << "length" << length << endl;
-	string buffer[length]; //on crée une variable buffer avec comme longueur la longueur du titre
-	header_file.read((char*)&buffer, sizeof(uint8_t)*length); //on lit la partie qui représente le titre qu'on met dans buffer
-	cout << buffer << endl; //le print donne un nombre hex et puis erreur de segmentation???
+	
 	
 }
