@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <string>
 #include <bitset> 
@@ -130,7 +131,21 @@ int main(int argc, char *argv[])
 		cout << "Impossible to open the file" << endl;
 		return 1;
 	}
-
+	
+	//on recopie la database dans un tableau
+	database_file.seekg(sequence_offset[nbseq+1]);
+	int taille = database_file.tellg();
+	cout << "taille" << taille << endl;
+	std::bitset<8> tableau_database[taille+1];
+	database_file.read((char*)&tableau_database, sizeof(std::bitset<8>)*(taille));
+	
+	/*std::bitset<8> bb;
+	vector< bitset<8> > *tableau_database;
+	tableau_database = new vector<bitset<8>>;
+	while( !database_file.eof() ){
+		bb = database_file.get();
+		tableau_database.push_back(bb);
+	}*/
 	
 	// b is the bit of the current letter read in the database, tmp is the current sequence read in the database
 	
@@ -139,10 +154,12 @@ int main(int argc, char *argv[])
 
    // parse the whole database
    for (int i =0; i<(nbseq+1) ;i++){
-	   database_file.seekg(sequence_offset[i]);
+	   //database_file.seekg(sequence_offset[i]);
+	   tableau_database[sequence_offset[i]];
 	   int breaking_out = 0;
 	   for (int j = 0;j < query.size() ; j++){
-		b = database_file.get();
+		//b = database_file.get();
+		b = tableau_database[j];
 		if (b!=query[j]){
 			break;
 		}
@@ -157,9 +174,8 @@ int main(int argc, char *argv[])
 	   if (breaking_out==1){
 		   break;
 		}
-
 	}
-
+	
 	database_file.close();
 
 
