@@ -133,6 +133,13 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
+	//on recopie la database dans un tableau
+	cout << "seqoffset " << nbseq+1 << endl;
+	database_file.seekg(sequence_offset[nbseq+1-1]);
+	int taille = database_file.tellg();
+	cout << "taille " << taille << endl;
+	char* tableau_database = new char[taille+1];
+	database_file.read((char*)&tableau_database, sizeof(char)*taille);
 	
 	// b is the bit of the current letter read in the database, tmp is the current sequence read in the database
 	
@@ -155,6 +162,7 @@ int main(int argc, char *argv[])
 			break;
 		}
 	   }
+	   
 	   
 	   if (breaking_out==1){
 		   break;
