@@ -45,12 +45,12 @@ int main(int argc, char *argv[])
     // c is the character in the file, s is the name of the Letter created, query is a vector containing the binary form of each letter
 	char c;
 	string s = "";
-	std::vector< bitset<8> > query; 
+	std::vector<int8_t> query; 
 		while(query_file >> c)
 		{	
 			s=c;
 			Letter* lettre = new Letter(s);
-			std::bitset<8> bit;
+			int8_t bit;
 			bit = lettre->binary_conversion();
 			query.push_back(bit); 
 		}
@@ -134,24 +134,25 @@ int main(int argc, char *argv[])
 	}
 
 	//on recopie la database dans un tableau
-	cout << "seqoffset " << nbseq+1 << endl;
-	database_file.seekg(sequence_offset[nbseq+1-1]);
-	int taille = database_file.tellg();
-	cout << "taille " << taille << endl;
-	char* tableau_database = new char[taille+1];
-	database_file.read((char*)&tableau_database, sizeof(char)*taille);
-	
-	// b is the bit of the current letter read in the database, tmp is the current sequence read in the database
-	
-   std::bitset<8> b = 0b10000000;
-   int index;
+	database_file.seekg(0,ios_base::end); //on va a la dernière position dans le fichier sequence
+	int taille = database_file.tellg(); //on regarde où on est, ce qui nous donne la taille du tableau
+	cout << "taille= " << taille << endl;
+	database_file.seekg(0,ios_base::beg);
+	int8_t *db;
+	db= new int8_t [taille]; //cree un tableau de bit
+	database_file.read((char*)&db[0], sizeof(int8_t)*(taille));
 
+
+	
+   //std::bitset<8> b = 0b10000000;
+	int index;
+	int8_t b;
    // parse the whole database
    for (int i =0; i<(nbseq+1) ;i++){
-	   database_file.seekg(sequence_offset[i]);
+	   //database_file.seekg(sequence_offset[i]);
 	   int breaking_out = 0;
 	   for (int j = 0;j < query.size() ; j++){
-		b = database_file.get();
+		b = db[sequence_offset[i]+j];
 		if (b!=query[j]){
 			break;
 		}
@@ -162,7 +163,6 @@ int main(int argc, char *argv[])
 			break;
 		}
 	   }
-	   
 	   
 	   if (breaking_out==1){
 		   break;
@@ -182,8 +182,7 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 	int8_t reading;
-	/*takes index as argument and looks for the position of the beginning of the title,
-                start with 1A*/
+	//takes index as argument and looks for the position of the beginning of the title,start with 1A
 	header_file.seekg(header_offset[index]);
 	header_file.read((char*)&reading, sizeof(uint8_t));
 	while(reading!=uint8_t(0x1A)){
@@ -199,6 +198,6 @@ int main(int argc, char *argv[])
 	cout << endl;
 	duration = (clock() - start ) / (double) CLOCKS_PER_SEC;
     cout<<"duration of algorithm : "<< duration << endl;
-    cout << "test";
+
 	return 0;
 }

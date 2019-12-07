@@ -9,86 +9,86 @@ Letter::Letter(string n){ //constructeur de la classe
 	name = n;
 }
 
-std::bitset<8> Letter::binary_conversion(){
+int8_t Letter::binary_conversion(){
 	//function returning the binary number associated to the letter given in parameter
-	std::bitset<8> n; //on cree la variable ou on stocke le nombre binaire
+	int8_t n; //on cree la variable ou on stocke le nombre binaire
 	if(name=="A"){
-		n=0b00000001; //0b c'est pour transformer en binaire
+		n=1; //0b c'est pour transformer en binaire
 	}
 	else if(name=="B"){
-		n=0b00000010;
+		n=2;
 	}
 	else if(name=="C"){
-		n=0b00000011;
+		n=3;
 	}
 	else if(name=="D"){
-		n=0b00000100;
+		n=4;
 	}
 	else if(name=="E"){
-		n=0b00000101;
+		n=5;
 	}
 	else if(name=="F"){
-		n=0b00000110;
+		n=6;
 	}
 	else if(name=="G"){
-		n=0b00000111;
+		n=7;
 	}
 	else if(name=="H"){
-		n=0b00001000;
+		n=8;
 	}
 	else if(name=="I"){
-		n=0b00001001;
+		n=9;
 	}
 	else if(name=="J"){
-		n=0b00011011;
+		n=27;
 	}
 	else if(name=="K"){
-		n=0b00001010;
+		n=10;
 	}
 	else if(name=="L"){
-		n=0b00001011;
+		n=11;
 	}
 	else if(name=="M"){
-		n=0b00001100;
+		n=12;
 	}
 	else if(name=="N"){
-		n=0b00001101;
+		n=13;
 	}
 	else if(name=="O"){
-		n=0b00011010;
+		n=26;
 	}
 	else if(name=="P"){
-		n=0b00001110;
+		n=14;
 	}
 	else if(name=="Q"){
-		n=0b00001111;
+		n=15;
 	}
 	else if(name=="R"){
-		n=0b00010000;
+		n=16;
 	}
 	else if(name=="S"){
-		n=0b00010001;
+		n=17;
 	}
 	else if(name=="T"){
-		n=0b00010010;
+		n=18;
 	}
 	else if(name=="U"){
-		n=0b00011000;
+		n=24;
 	}
 	else if(name=="V"){
-		n=0b00010011;
+		n=19;
 	}
 	else if(name=="W"){
-		n=0b00010100;
+		n=20;
 	}
 	else if(name=="X"){
-		n=0b00010101;
+		n=21;
 	}
 	else if(name=="Y"){
-		n=0b00010110;
+		n=22;
 	}
 	else if(name=="Z"){
-		n=0b00010111;
+		n=25;
 	}
 	return n; //renvoie le binaire
 }

@@ -10,5 +10,5 @@ private:
 	
 public:
 	Letter(string name); //constructeur	
-	std::bitset<8> binary_conversion(); //convertisseur
+	int8_t binary_conversion(); //convertisseur
 };
