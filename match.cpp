@@ -1,11 +1,11 @@
 #include <iostream>
 #include <string>
-#include <bitset> 
 #include <fstream>
 #include <vector>
 #include <cstdint>
 #include <byteswap.h>
 #include "letter.h"
+#include "algo.h"
 #include <stdlib.h>
 #include <ctime>   
 using namespace std;
@@ -16,6 +16,24 @@ using namespace std;
  * defaut : BLOSUM62, gap open penalty 11,gap extension penalty 1
  * sinon : ajout de paramètres
 */
+
+int8_t* setInArray(string fichier){
+	
+	ifstream database_file (fichier, ios::in | ios::binary);
+
+	//on recopie la database dans un tableau
+	database_file.seekg(0,ios_base::end); //on va a la dernière position dans le fichier sequence
+	int taille = database_file.tellg(); //on regarde où on est, ce qui nous donne la taille du tableau
+	database_file.seekg(0,ios_base::beg);
+	int8_t *db;
+	db= new int8_t [taille]; //cree un tableau de bit
+	database_file.read((char*)&db[0], sizeof(int8_t)*(taille));
+	database_file.close();
+
+	
+	return db;
+}
+
 
 int main(int argc, char *argv[])
 {	clock_t start;
@@ -62,7 +80,7 @@ int main(int argc, char *argv[])
 	string argv2 = argv[2];
 	argv2+=".pin";
 	ifstream index_file (argv2, ios::in | ios::binary);
-	if( !index_file.is_open() )
+	if(!index_file.is_open())
 	{
 		cout << "Impossible to open the file" << endl;
 		return 1;
@@ -123,33 +141,31 @@ int main(int argc, char *argv[])
 	index_file.close();
 
 	
-	// open the sequence file
+	// OPEN THE PSQ
+	//à faire : verifier que tout s'est bien passé
 	string argv3 = argv[2];
 	argv3+=".psq";
-	ifstream database_file (argv3, ios::in | ios::binary);
-	if( !database_file.is_open() )
-	{
-		cout << "Impossible to open the file" << endl;
-		return 1;
-	}
-
-	//on recopie la database dans un tableau
-	database_file.seekg(0,ios_base::end); //on va a la dernière position dans le fichier sequence
-	int taille = database_file.tellg(); //on regarde où on est, ce qui nous donne la taille du tableau
-	cout << "taille= " << taille << endl;
-	database_file.seekg(0,ios_base::beg);
 	int8_t *db;
-	db= new int8_t [taille]; //cree un tableau de bit
-	database_file.read((char*)&db[0], sizeof(int8_t)*(taille));
-
-
+	db=setInArray(argv3);
 	
-   //std::bitset<8> b = 0b10000000;
+	//verifie s'il y a un argument, sinon prend celui par défaut
+	string arg_blosum;
+	if (argc<4){
+		arg_blosum="BLOSUM62";
+	}
+	else {
+		arg_blosum=argv[3];
+	}
+	
+	Algo* algo = new Algo(db, query, nbseq+1, sequence_offset,arg_blosum);
+	algo->sw();
+	cout << "l'algo est fini"<<endl;
+/*
+
 	int index;
 	int8_t b;
    // parse the whole database
    for (int i =0; i<(nbseq+1) ;i++){
-	   //database_file.seekg(sequence_offset[i]);
 	   int breaking_out = 0;
 	   for (int j = 0;j < query.size() ; j++){
 		b = db[sequence_offset[i]+j];
@@ -169,8 +185,6 @@ int main(int argc, char *argv[])
 		}
 
 	}
-
-	database_file.close();
 
 
 	string argv4 = argv[2];
@@ -198,6 +212,6 @@ int main(int argc, char *argv[])
 	cout << endl;
 	duration = (clock() - start ) / (double) CLOCKS_PER_SEC;
     cout<<"duration of algorithm : "<< duration << endl;
-
+*/
 	return 0;
 }
