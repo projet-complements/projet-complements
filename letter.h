@@ -1,6 +1,5 @@
 #include <string>
 #include <iostream>
-#include <bitset>
 using namespace std;
 
 class Letter

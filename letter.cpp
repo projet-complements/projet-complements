@@ -1,8 +1,4 @@
 #include "letter.h"
-/* POUR COMPILER (on compile d'abord le fichier de la classe, puis on compile tout ensemble pour pouvoir les utiliser entre eux!)
- * g++ letter.cpp -c
- * g++ letter.o match.cpp -o match
- * */
 
 
 Letter::Letter(string n){ //constructeur de la classe
@@ -13,7 +9,7 @@ int8_t Letter::binary_conversion(){
 	//function returning the binary number associated to the letter given in parameter
 	int8_t n; //on cree la variable ou on stocke le nombre binaire
 	if(name=="A"){
-		n=1; //0b c'est pour transformer en binaire
+		n=1; 
 	}
 	else if(name=="B"){
 		n=2;
@@ -88,7 +84,7 @@ int8_t Letter::binary_conversion(){
 		n=22;
 	}
 	else if(name=="Z"){
-		n=25;
+		n=23;
 	}
 	return n; //renvoie le binaire
 }
