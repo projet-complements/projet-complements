@@ -14,8 +14,10 @@ private:
 	int n;
 	int size;
 	string arg_blosum;
+	int open;
+	int ext;
 	
 public:
-	Algo(int8_t db[],vector<int8_t> query,int size_score, int psq_offset[], string arg); //constructeur	
+	Algo(int8_t db[],vector<int8_t> query,int size_score, int psq_offset[], string arg, int open, int ext); //constructeur	
 	void sw();
 };

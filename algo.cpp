@@ -1,13 +1,17 @@
 #include "algo.h"
 
-Algo::Algo(int8_t database[],vector<int8_t> q,int size_score, int psq_offset[], string arg){ //constructeur de la classe
+Algo::Algo(int8_t database[],vector<int8_t> q,int size_score, int psq_offset[], string arg, int open_pen, int ext_pen){ //constructeur de la classe
 	query = q;
 	db = database;
 	score = new int[size_score];
 	n=sizeof(query);
 	size=size_score;
+	int init[size]={0};
+	score=init;
 	offset=psq_offset;
 	arg_blosum=arg;
+	open=open_pen;
+	ext=ext_pen;
 }
 
 void Algo::sw(){
@@ -16,7 +20,6 @@ void Algo::sw(){
 	int8_t b;
 	
 	// pour l'instant on prend un penalty gap au hasard
-	int penalty_gap = -5;
    // parse the whole database
 	for (int ind =0; ind<(size) ;ind++){
 		index=ind;
@@ -45,24 +48,44 @@ void Algo::sw(){
 			for (int jj = 0; jj<m+1; jj++){
 				H[0][jj]=0;
 			}
-			
+			int lenght_h=0;
+			int lenght_v=0;
+			int penalty_gaph=open;
+			int penalty_gapv=open;
 			//donne la valeur pour le reste de la matrice
 			for (int i = 1; i < n+1 ; i++){
 				for (int j = 1; j < m+1 ; j++){
 					// on cree un Coord qui va prendre les 2 int8_t dans les sequences pour en renvoyer le score
 					Coord* coord = new Coord(query[i],b,arg_blosum);
-					res1=H[i][j-1]+penalty_gap;
+					res1=H[i][j-1]-penalty_gapv;
 					res2=H[i-1][j-1]+coord->score();
-					res3=H[i-1][j]+penalty_gap;
+					res3=H[i-1][j]-penalty_gaph;
 					if(res1<0 && res2<0 && res3<0){
 						H[i][j]=0;
 						}
 					else {
 						int interm = std::max(res1,res2);
 						H[i][j]=std::max(interm, res3);
+						//on verifie si on a pris un penalty_gap horizontal, si oui on update la longueur du gap horizontal
+						if(H[i][j]==res1){
+							lenght_v+=1;
+							penalty_gapv+=(lenght_v*ext);
+							lenght_h=0;
+						}
+						//on verifie si on a pris un penalty_gap vertical, si oui on update la longueur du gap vertical
+						else if(H[i][j]==res2){
+							lenght_h+=1;
+							penalty_gapv+=(lenght_h*ext);
+							lenght_v=0;
+						}
+						//si on a pas pris un gap, on reinitialise à 0
+						else {
+							lenght_v=0;
+							lenght_h=0;
+						}
 					}
-					if(H[i][j]>H[i][j-1]){
-						score[index];
+					if(H[i][j]>score[index]){
+						score[index]=H[i][j];
 					}
 				}
 			}

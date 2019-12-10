@@ -130,10 +130,10 @@ int main(int argc, char *argv[])
 	
 	// read the offsets
 	int32_t header_offset[nbseq+1];
-	int32_t sequence_offset[nbseq+1];
+	int32_t sequence_offset[10];
 
 	index_file.read((char*)&header_offset[0], sizeof(int32_t)*(nbseq+1));
-	index_file.read((char*)&sequence_offset[0], sizeof(int32_t)*(nbseq+1));
+	index_file.read((char*)&sequence_offset[0], sizeof(int32_t)*(10));
 	for(int i = 0; i < nbseq+1; i++){
 		header_offset[i] = __bswap_32(header_offset[i]);
 		sequence_offset[i] = __bswap_32(sequence_offset[i]);
@@ -157,11 +157,27 @@ int main(int argc, char *argv[])
 		arg_blosum=argv[3];
 	}
 	
-	Algo* algo = new Algo(db, query, nbseq+1, sequence_offset,arg_blosum);
+	int open_penalty;
+	if (argc<5){
+		open_penalty=11;
+	}
+	else {
+		open_penalty=atoi(argv[4]);
+	}
+	
+	int ext_penalty;
+	if (argc<6){
+		ext_penalty=1;
+	}
+	else {
+		ext_penalty=atoi(argv[5]);
+	}
+	
+	Algo* algo = new Algo(db, query, 10, sequence_offset,arg_blosum, open_penalty, ext_penalty);
 	algo->sw();
 	cout << "l'algo est fini"<<endl;
 /*
-
+//ancienne boucle
 	int index;
 	int8_t b;
    // parse the whole database
@@ -186,8 +202,8 @@ int main(int argc, char *argv[])
 
 	}
 
-
-	string argv4 = argv[2];
+*/
+	/*string argv4 = argv[2];
 	argv4+=".phr";
 	ifstream header_file (argv4, ios::in | ios::binary);
 	if( !header_file.is_open() )
