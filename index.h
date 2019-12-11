@@ -18,9 +18,12 @@ private:
 	int32_t maxseq;
 	vector<int32_t> header_offset;
 	vector<int32_t> sequence_offset;
-	
-	
-	
+	std::string argv2;
+	int32_t header_offset[nbseq+1];
+	int32_t sequence_offset[nbseq+1];
+	char title[title_length];
+	char timestp[timestp_length];
 public:
-	Index(vector<char> tit,vector<char> time,vector<int32_t> vh, vector<int32_t> vs); //constructor	
+	Index(std::string argv2,int32_t version,int32_t database_type,int64_t residuecount,int32_t nbseq,int32_t maxseq); //constructor	
+	
 };
