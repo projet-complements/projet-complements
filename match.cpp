@@ -63,16 +63,17 @@ int main(int argc, char *argv[])
     // c is the character in the file, s is the name of the Letter created, query is a vector containing the binary form of each letter
 	char c;
 	string s = "";
-	std::vector<int8_t> query; 
+	std::vector<int8_t> queryv; 
 		while(query_file >> c)
 		{	
 			s=c;
 			Letter* lettre = new Letter(s);
 			int8_t bit;
 			bit = lettre->binary_conversion();
-			query.push_back(bit); 
+			queryv.push_back(bit); 
 		}
-
+	
+	int8_t* query = &queryv[0];
 	query_file.close();
 
 
@@ -172,7 +173,6 @@ int main(int argc, char *argv[])
 	else {
 		ext_penalty=atoi(argv[5]);
 	}
-	
 	Algo* algo = new Algo(db, query, 10, sequence_offset,arg_blosum, open_penalty, ext_penalty);
 	algo->sw();
 	cout << "l'algo est fini"<<endl;
