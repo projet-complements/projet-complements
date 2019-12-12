@@ -13,5 +13,6 @@ public:
 	Coord(int8_t letter1, int8_t letter2, string matrice_file); //constructeur
 	int coord_conversionX(); //convertisseur
 	int coord_conversionY();
+	int** matrice_score();
 	int score();
 };

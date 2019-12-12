@@ -171,20 +171,17 @@ int Coord::coord_conversionY(){
 	return coordY;
 }
 
-
-int Coord::score() //function the returning the score found in the substitution matrix
-{	
+int** Coord::matrice_score(){
 	//open the txt file with the matrix
 	ifstream fichier(matrice_file);
 	if(!fichier.is_open())
 	{
-		cout << "Impossible to open the file" << endl;
+		cout << "Impossible to open the file of the matrix" << endl;
 		return 0;
 	}
-	
-	int tailleX(24);
-	int tailleY(24);
-	int matrice[tailleX][tailleY]; //d'abord on crée la matrice de substitution en lisant la matrice BLOSUM reçu en argument
+	const int N=24;
+
+	int** matrice=new int*[N];; //d'abord on crée la matrice de substitution en lisant la matrice BLOSUM reçu en argument
 	string str="";
 	while(!fichier.eof())
 	{
@@ -230,9 +227,19 @@ int Coord::score() //function the returning the score found in the substitution 
 		}
 		break;
 	}
-	
+	return matrice;
+		
+}
+int Coord::score() //function the returning the score found in the substitution matrix
+{	
+	int creation=0; //la premiere fois que la fonction est appelé, creation est 0
 	int coordX = coord_conversionX(); //on applique les fonctions de conversion pour convertir les coord en int8 en coord de int tout simple
 	int coordY = coord_conversionY();
+	int **matrice;
+	if(creation==0){ //si creation est 0, on crée la matrice
+		matrice = matrice_score();
+		creation=1; //on met creation à 1 car la matrice est créé
+	}
 	int score = matrice[coordX][coordY]; //le score est la valeur trouvée à la position donnée par les coord dans la matrice de substitution
 	
 	return score;
