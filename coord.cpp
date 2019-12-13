@@ -9,13 +9,14 @@
 using namespace std;
 
  
-Coord::Coord(int8_t coordX, int8_t coordY, string fichier){
+Coord::Coord(int8_t coordX, int8_t coordY, Matrice matrice){
 	letter1=coordX;
 	letter2=coordY;
-	matrice_file=fichier;
+	matrice=matrice;
 }
 
 int Coord::coord_conversionX(){
+	cout << "coord X" << endl;
 	//function returning the coordinate X associated to the letter given in parameter as an int8
 	int coordX;
 	if(letter1==1){
@@ -94,6 +95,7 @@ int Coord::coord_conversionX(){
 }
 
 int Coord::coord_conversionY(){
+	cout << "coordY" << endl;
 	//function returning the coordinate Y associated to the letter given in parameter
 	int coordY;
 	if(letter2==1){
@@ -171,75 +173,10 @@ int Coord::coord_conversionY(){
 	return coordY;
 }
 
-int** Coord::matrice_score(){
-	//open the txt file with the matrix
-	ifstream fichier(matrice_file);
-	if(!fichier.is_open())
-	{
-		cout << "Impossible to open the file of the matrix" << endl;
-		return 0;
-	}
-	const int N=24;
-
-	int** matrice=new int*[N];; //d'abord on crée la matrice de substitution en lisant la matrice BLOSUM reçu en argument
-	string str="";
-	while(!fichier.eof())
-	{
-		int j;
-		for(j=30; j>-1; j--){ //il y a 30 lignes dans le fichier, les coord Y vont de 23->0 lisant du haut vers le bas
-		std::getline(fichier, str);
-		if(str[0]=='#') //les lignes commencant par # sont ignorées
-		{
-			str.clear();
-		}
-		else if(str[0]==' '){ //les lignes commencant par un blanc sont ignorées 
-			str.clear();
-		}
-		else{ //ligne commencant par autre chose donc normalement une lettre et puis les valeurs
-			int i;
-			int chiffre;
-			int coordX=-1;
-			int coordY;
-			string s;
-			int neg = 0;
-				for(i=2; i<74; i++) //les prochains éléments sont les valeurs à mettre dans la matrice, dans le fichier allant de élém 2 à 74 incluant les espaces, les signes et les chiffres
-					if(str[i]==' '){
-					}
-					else if(str[i]=='-'){
-						neg = 1;
-					}
-					else{ //normalement on tombe sur un chiffre
-						s = str[i];
-						stringstream geek(s); //object from the class stringstream with the value of s
-						if(neg==1){
-							geek >> chiffre; //on ajoute le signe négatif si neg=1
-							chiffre = -chiffre;
-						}
-						else{
-							geek >> chiffre; //stream the object geek to integer chiffre
-						}
-						coordX=coordX+1;
-						coordY=j;	 //coord Y est la même que celle de la ligne
-						matrice[coordX][coordY]=chiffre; //à la position (X,Y) de la matrice on place la valeur
-						neg=0; //on reinitialise le neg à 0
-					}
-		}
-		}
-		break;
-	}
-	return matrice;
-		
-}
 int Coord::score() //function the returning the score found in the substitution matrix
 {	
-	int creation=0; //la premiere fois que la fonction est appelé, creation est 0
 	int coordX = coord_conversionX(); //on applique les fonctions de conversion pour convertir les coord en int8 en coord de int tout simple
 	int coordY = coord_conversionY();
-	int **matrice;
-	if(creation==0){ //si creation est 0, on crée la matrice
-		matrice = matrice_score();
-		creation=1; //on met creation à 1 car la matrice est créé
-	}
 	int score = matrice[coordX][coordY]; //le score est la valeur trouvée à la position donnée par les coord dans la matrice de substitution
 	
 	return score;
