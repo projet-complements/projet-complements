@@ -6,6 +6,7 @@
 #include <byteswap.h>
 #include "letter.h"
 #include "algo.h"
+#include "matrice.h"
 #include <stdlib.h>
 #include <ctime>   
 using namespace std;
@@ -131,10 +132,10 @@ int main(int argc, char *argv[])
 	
 	// read the offsets
 	int32_t header_offset[nbseq+1];
-	int32_t sequence_offset[10];
+	int32_t sequence_offset[nbseq+1];
 
 	index_file.read((char*)&header_offset[0], sizeof(int32_t)*(nbseq+1));
-	index_file.read((char*)&sequence_offset[0], sizeof(int32_t)*(10));
+	index_file.read((char*)&sequence_offset[0], sizeof(int32_t)*(nbseq+1));
 	for(int i = 0; i < nbseq+1; i++){
 		header_offset[i] = __bswap_32(header_offset[i]);
 		sequence_offset[i] = __bswap_32(sequence_offset[i]);
@@ -173,7 +174,10 @@ int main(int argc, char *argv[])
 	else {
 		ext_penalty=atoi(argv[5]);
 	}
-	Algo* algo = new Algo(db, query, 10, sequence_offset,arg_blosum, open_penalty, ext_penalty);
+	Matrice* matrix = new Matrice(arg_blosum);
+	int** M = matrix->matrice_score();
+	Algo* algo = new Algo(db, query, nbseq+1, sequence_offset, M , open_penalty, ext_penalty);
+	// we do the Watermann Smith algorithm
 	algo->sw();
 	cout << "l'algo est fini"<<endl;
 /*

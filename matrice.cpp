@@ -12,7 +12,7 @@ Matrice::Matrice(string fichier){
 	matrice_file=fichier;
 }
 
-int** Coord::matrice_score(){
+int** Matrice::matrice_score(){
 	//open the txt file with the matrix
 	ifstream fichier(matrice_file);
 	if(!fichier.is_open())

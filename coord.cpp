@@ -9,7 +9,7 @@
 using namespace std;
 
  
-Coord::Coord(int8_t coordX, int8_t coordY, Matrice matrice){
+Coord::Coord(int8_t coordX, int8_t coordY, int** matrice){
 	letter1=coordX;
 	letter2=coordY;
 	matrice=matrice;

@@ -13,11 +13,11 @@ private:
 	int32_t* offset;
 	int n;
 	int size;
-	string arg_blosum;
+	int** arg_blosum;
 	int open;
 	int ext;
 	
 public:
-	Algo(int8_t* db,int8_t* query,int size_score, int32_t* psq_offset, string arg, int open, int ext); //constructeur	
+	Algo(int8_t* db,int8_t* query,int size_score, int32_t* psq_offset,int** arg, int open, int ext); //constructeur	
 	void sw();
 };
