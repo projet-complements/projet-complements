@@ -61,7 +61,6 @@ int main(int argc, char *argv[])
     std::getline(query_file, str);
     str.clear();
     
-    cout << "coucou" << endl;
     // c is the character in the file, s is the name of the Letter created, query is a vector containing the binary form of each letter
 	char c;
 	string s = "";
@@ -78,7 +77,6 @@ int main(int argc, char *argv[])
 	int8_t* query = &queryv[0];
 	query_file.close();
 
-    cout << "coucou2" << endl;
 	// open the index file to find the title position of the sequence
 	string argv2 = argv[2];
 	argv2+=".pin";
@@ -131,7 +129,6 @@ int main(int argc, char *argv[])
 	index_file.read((char*)&maxseq, sizeof(int32_t));
 	maxseq=__bswap_32(maxseq);
 	
-	cout << "coucou3" << endl;
 	// read the offsets
 	int32_t header_offset[nbseq+1];
 	int32_t sequence_offset[nbseq+1];
@@ -144,7 +141,6 @@ int main(int argc, char *argv[])
 	}
 	index_file.close();
 
-	cout << "coucou4" << endl;
 	// OPEN THE PSQ
 	//à faire : verifier que tout s'est bien passé
 	string argv3 = argv[2];
@@ -180,11 +176,10 @@ int main(int argc, char *argv[])
 	else {
 		ext_penalty=atoi(argv[5]);
 	}
-	cout << "coucou5" << endl;
+	
 	Matrice* matrix = new Matrice(arg_blosum);
-	cout << "coucou6" << endl;
 	int** M = matrix->matrice_score();
-	cout << "coucou7" << endl;
+	cout << "matrice crée" << endl;
 	Algo* algo = new Algo(db, query, nbseq+1, sequence_offset, M , open_penalty, ext_penalty);
 	// we do the Watermann Smith algorithm
 	algo->sw();
@@ -212,9 +207,7 @@ int main(int argc, char *argv[])
 	   if (breaking_out==1){
 		   break;
 		}
-
 	}
-
 */
 	/*string argv4 = argv[2];
 	argv4+=".phr";

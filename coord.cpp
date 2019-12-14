@@ -9,14 +9,13 @@
 using namespace std;
 
  
-Coord::Coord(int8_t coordX, int8_t coordY, int** matrice){
+Coord::Coord(int8_t coordX, int8_t coordY, int** arg){
 	letter1=coordX;
 	letter2=coordY;
-	matrice=matrice;
+	matrice=arg;
 }
 
 int Coord::coord_conversionX(){
-	cout << "coord X" << endl;
 	//function returning the coordinate X associated to the letter given in parameter as an int8
 	int coordX;
 	if(letter1==1){
@@ -95,7 +94,6 @@ int Coord::coord_conversionX(){
 }
 
 int Coord::coord_conversionY(){
-	cout << "coordY" << endl;
 	//function returning the coordinate Y associated to the letter given in parameter
 	int coordY;
 	if(letter2==1){
@@ -176,9 +174,11 @@ int Coord::coord_conversionY(){
 int Coord::score() //function the returning the score found in the substitution matrix
 {	
 	int coordX = coord_conversionX(); //on applique les fonctions de conversion pour convertir les coord en int8 en coord de int tout simple
+	cout << "coordX " << coordX << endl;
 	int coordY = coord_conversionY();
+	cout << "coordY " << coordY << endl;
 	int score = matrice[coordX][coordY]; //le score est la valeur trouvée à la position donnée par les coord dans la matrice de substitution
-	
+	cout <<"score " << score << endl;
 	return score;
 
 }

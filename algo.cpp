@@ -43,11 +43,12 @@ void Algo::sw(){
 
 		for (int i = 1; i < n+1 ; i++){
 			for (int j = 1; j < m+1 ; j++){
-				
+				cout <<"m = " << m << " indice = " << index << "j= " << j << endl;
 				b = db[offset[index]+j-1];
+				cout << "offset " << offset[index] << endl;
 				//cout << " lettre num = " << j-1 << endl;
 				// on cree un Coord qui va prendre les 2 int8_t dans les sequences pour en renvoyesssr le score
-				Coord* coord = new Coord(query[i],b,arg_blosum);
+				Coord* coord = new Coord(query[i-1],b,arg_blosum);
 				res1=H[i][j-1]-penalty_gapv;
 				res2=H[i-1][j-1]+coord->score();
 				res3=H[i-1][j]-penalty_gaph;
@@ -84,7 +85,7 @@ void Algo::sw(){
 				if (H[i][j]>score[index]){
 					score[index]=H[i][j];
 				}
-				
+				cout << "score index " << score[index] << endl;
 			}
 		}
 	
@@ -95,7 +96,3 @@ void Algo::sw(){
 			
 	return;
 }
-	
-	
-		
-

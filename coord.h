@@ -11,7 +11,7 @@ private:
 	int** matrice; //fichier donnant la matrice BLOSUM
 
 public:
-	Coord(int8_t letter1, int8_t letter2, int** matrice); //constructeur
+	Coord(int8_t letter1, int8_t letter2, int** arg); //constructeur
 	int coord_conversionX(); //convertisseur
 	int coord_conversionY();
 	int score();
