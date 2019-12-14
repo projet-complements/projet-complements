@@ -34,8 +34,8 @@ void Algo::sw(){
 		cout <<"m = " << m << " indice = " << index << endl;
 		//cout <<"taille de la seq " << sizeof(tmp) << endl;
 		// initialize matrix to 0
-		int H[n+1][m+1] = {0};
-
+		//int H[n+1][m+1] = {0};
+		vector<vector<int>> H(n+1, vector<int>(m+1,0));
 		int length_h=1;
 		int length_v=1;
 		int penalty_gaph=open+(length_h*ext);
@@ -45,11 +45,11 @@ void Algo::sw(){
 			for (int j = 1; j < m+1 ; j++){
 				
 				b = db[offset[index]+j-1];
-				cout << " lettre num = " << j-1 << endl;
+				//cout << " lettre num = " << j-1 << endl;
 				// on cree un Coord qui va prendre les 2 int8_t dans les sequences pour en renvoyesssr le score
-				//Coord* coord = new Coord(query[i],b,arg_blosum);
+				Coord* coord = new Coord(query[i],b,arg_blosum);
 				res1=H[i][j-1]-penalty_gapv;
-				res2=H[i-1][j-1]+3;
+				res2=H[i-1][j-1]+coord->score();
 				res3=H[i-1][j]-penalty_gaph;
 				
 				if(res1<0 && res2<0 && res3<0){// if it is not a gap, we reinitialize the gap penalties
@@ -81,11 +81,15 @@ void Algo::sw(){
 					penalty_gapv=open+(length_v*ext);
 				}
 				
+				if (H[i][j]>score[index]){
+					score[index]=H[i][j];
+				}
+				
 			}
 		}
 	
 		cout << "Algo est a calculé " << index <<"avec comme score" << score[index]<< endl;
-		continue;
+		//continue;
 
 	}
 			
