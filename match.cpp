@@ -29,9 +29,7 @@ int8_t* setInArray(string fichier){
 	int8_t *db;
 	db= new int8_t [taille]; //cree un tableau de bit
 	database_file.read((char*)&db[0], sizeof(int8_t)*(taille));
-	database_file.close();
-
-	
+	database_file.close();	
 	return db;
 }
 
@@ -73,8 +71,7 @@ int main(int argc, char *argv[])
 		bit = lettre->binary_conversion();
 		queryv.push_back(bit); 
 	}
-	
-	int8_t* query = &queryv[0];
+	//int8_t* query = &queryv[0];
 	query_file.close();
 
 	// open the index file to find the title position of the sequence
@@ -146,11 +143,12 @@ int main(int argc, char *argv[])
 	string argv3 = argv[2];
 	argv3+=".psq";
 	int8_t *db;
-	try {
+	db=setInArray(argv3);
+	/*try {
 		db=setInArray(argv3);
 	} catch(std::bad_alloc & a) {
 		cout << "erreur bad alloc" << endl;
-	}
+	}*/
 	
 	//verifie s'il y a un argument, sinon prend celui par défaut
 	string arg_blosum;
@@ -179,8 +177,8 @@ int main(int argc, char *argv[])
 	
 	Matrice* matrix = new Matrice(arg_blosum);
 	int** M = matrix->matrice_score();
-	cout << "matrice crée" << endl;
-	Algo* algo = new Algo(db, query, nbseq+1, sequence_offset, M , open_penalty, ext_penalty);
+	int32_t* psq_offset = sequence_offset;
+	Algo* algo = new Algo(db, queryv, int(nbseq+1), psq_offset, M , open_penalty, ext_penalty);
 	// we do the Watermann Smith algorithm
 	algo->sw();
 	cout << "l'algo est fini"<<endl;

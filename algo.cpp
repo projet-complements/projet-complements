@@ -1,7 +1,8 @@
 #include "algo.h"
 
-Algo::Algo(int8_t* database,int8_t* q,int size_score, int32_t* psq_offset, int** arg, int open_pen, int ext_pen){ //constructeur de la classe
+Algo::Algo(int8_t* database,vector<int8_t> q,int size_score, int32_t* psq_offset, int** arg, int open_pen, int ext_pen){ //constructeur de la classe
 	query = q;
+	cout << query.size() << endl;
 	db = database;
 	n=sizeof(query);
 	size=size_score;
@@ -21,17 +22,15 @@ void Algo::sw(){
 	// parse the whole database
 	for (int ind =0; ind<(size-1) ;ind++){
 		index=ind;
-		m=offset[index+1]-offset[index];
-		/*b = 10; //donne une valeur différente de 0
+		m=offset[index+1]-offset[index]-1;
+		//b = 10; //donne une valeur différente de 0
 		//on stocke la sequence qu'on regarde dans tmp
 		int tmp[m]; 
 		for(int tmpi = 0 ; (tmpi)<m ; (tmpi)++){
 			tmp[tmpi] = db[offset[index]+tmpi];
-			//cout << "lettre" << int(b)<< endl;
-			//cout << tmpi << endl;
-		}*/
-		
-		cout <<"m = " << m << " indice = " << index << endl;
+			//cout << tmp[tmpi] << endl;
+		}
+
 		//cout <<"taille de la seq " << sizeof(tmp) << endl;
 		// initialize matrix to 0
 		//int H[n+1][m+1] = {0};
@@ -40,17 +39,15 @@ void Algo::sw(){
 		int length_v=1;
 		int penalty_gaph=open+(length_h*ext);
 		int penalty_gapv=open+(length_v*ext);
-
 		for (int i = 1; i < n+1 ; i++){
 			for (int j = 1; j < m+1 ; j++){
-				cout <<"m = " << m << " indice = " << index << "j= " << j << endl;
-				b = db[offset[index]+j-1];
-				cout << "offset " << offset[index] << endl;
-				//cout << " lettre num = " << j-1 << endl;
+				int8_t q = query[i-1];
+				int8_t t = tmp[j-1];
+				//b = db[offset[index]+j-1];
 				// on cree un Coord qui va prendre les 2 int8_t dans les sequences pour en renvoyesssr le score
-				Coord* coord = new Coord(query[i-1],b,arg_blosum);
+				//Coord* coord = new Coord(query[i-1],tmp[j-1],arg_blosum);
 				res1=H[i][j-1]-penalty_gapv;
-				res2=H[i-1][j-1]+coord->score();
+				res2=H[i-1][j-1]+3;//+coord->score();
 				res3=H[i-1][j]-penalty_gaph;
 				
 				if(res1<0 && res2<0 && res3<0){// if it is not a gap, we reinitialize the gap penalties
@@ -85,12 +82,10 @@ void Algo::sw(){
 				if (H[i][j]>score[index]){
 					score[index]=H[i][j];
 				}
-				cout << "score index " << score[index] << endl;
 			}
 		}
 	
-		cout << "Algo est a calculé " << index <<"avec comme score" << score[index]<< endl;
-		//continue;
+		//cout << "Algo est a calculé " << index <<"avec comme score " << score[index]<< endl;
 
 	}
 			
