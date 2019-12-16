@@ -29,7 +29,9 @@ int8_t* setInArray(string fichier){
 	int8_t *db;
 	db= new int8_t [taille]; //cree un tableau de bit
 	database_file.read((char*)&db[0], sizeof(int8_t)*(taille));
-	database_file.close();	
+	database_file.close();
+
+	
 	return db;
 }
 
@@ -71,7 +73,8 @@ int main(int argc, char *argv[])
 		bit = lettre->binary_conversion();
 		queryv.push_back(bit); 
 	}
-	//int8_t* query = &queryv[0];
+	
+	int8_t* query = &queryv[0];
 	query_file.close();
 
 	// open the index file to find the title position of the sequence
@@ -143,17 +146,16 @@ int main(int argc, char *argv[])
 	string argv3 = argv[2];
 	argv3+=".psq";
 	int8_t *db;
-	db=setInArray(argv3);
-	/*try {
+	try {
 		db=setInArray(argv3);
 	} catch(std::bad_alloc & a) {
 		cout << "erreur bad alloc" << endl;
-	}*/
+	}
 	
 	//verifie s'il y a un argument, sinon prend celui par défaut
 	string arg_blosum;
 	if (argc<4){
-		arg_blosum="BLOSUM62";
+		arg_blosum="BLOSUM62.txt";
 	}
 	else {
 		arg_blosum=argv[3];
@@ -177,37 +179,14 @@ int main(int argc, char *argv[])
 	
 	Matrice* matrix = new Matrice(arg_blosum);
 	int** M = matrix->matrice_score();
-	int32_t* psq_offset = sequence_offset;
-	Algo* algo = new Algo(db, queryv, int(nbseq+1), psq_offset, M , open_penalty, ext_penalty);
+	cout << "matrice crée" << endl;
+	Algo* algo = new Algo(db, query, nbseq, sequence_offset, M , open_penalty, ext_penalty); //nbseq db=int8*, query=int8*, 10=int32, sequenceoffset=int32, M=int**, int, int
 	// we do the Watermann Smith algorithm
 	algo->sw();
 	cout << "l'algo est fini"<<endl;
-/*
-//ancienne boucle
-	int index;
-	int8_t b;
-   // parse the whole database
-   for (int i =0; i<(nbseq+1) ;i++){
-	   int breaking_out = 0;
-	   for (int j = 0;j < query.size() ; j++){
-		b = db[sequence_offset[i]+j];
-		if (b!=query[j]){
-			break;
-		}
-		if (j == (query.size()-1)){
-			cout << "Found the sequence!"<< endl;
-			index=i;
-			breaking_out=1;
-			break;
-		}
-	   }
-	   
-	   if (breaking_out==1){
-		   break;
-		}
-	}
-*/
-	/*string argv4 = argv[2];
+	
+	
+	string argv4 = argv[2];
 	argv4+=".phr";
 	ifstream header_file (argv4, ios::in | ios::binary);
 	if( !header_file.is_open() )
@@ -215,23 +194,62 @@ int main(int argc, char *argv[])
 		cout << "Impossible to open the file" << endl;
 		return 1;
 	}
+	//boucle pour trouver les 30 premiers max dans le tableau score défini dans algo
+	int taille = nbseq; //nbseq+1
+	int* tableau_score = algo->score;
+	int tableau[taille] = {*tableau_score}; // !!JAI DU METTRE DANS ALGO TYPE DU SCORE À INT AU LIEU DE INT* ET EN PUBLIC AU LIEU DE PRIVATE
+	int max = tableau[0]; //on pose le max étant le 1er élément du tableau
+	cout << "max " << max << endl;
+	int position;
+	int i=0;
 	int8_t reading;
-	//takes index as argument and looks for the position of the beginning of the title,start with 1A
-	header_file.seekg(header_offset[index]);
-	header_file.read((char*)&reading, sizeof(uint8_t));
-	while(reading!=uint8_t(0x1A)){
+	for(int nbremax=0; nbremax<30;){ //on veut les 30 premiers max
+		for (i; i < taille; i++){ //on parcourt tout le tableau
+			if(max < tableau[i]){ //si on trouve un nouveau max
+				max = tableau[i]; //max est cet élément-là
+				position = i; //la position du max est donc la position de cet élément
+			}
+			else if(max = tableau[i]){ //si le max est = à l'élément considéré c'est qu'il est à la position 0
+				max = tableau[0];
+				position = 0;
+			}
+		}
+		nbremax ++;
+		cout << endl << "maximum" << nbremax << ":" << max << " à la position " << position << endl;
+		if(position==0){
+			max = tableau[position+1]; //si le max était à la position 0, on pose mnt le max à l'élément 1 sinon on reste coincé dans la boucle
+			cout << "test hello" << endl;
+			cout << "nouveau max" << max << endl;
+		}
+		else{
+			max = tableau[0]; //dans le cas contraire, on pose tjs le max étant le 1er élément
+			cout << "test coucou" << endl;
+		}
+
+		//avec les positions des max on retrouve les protéines dans le fichier
+		//int8_t reading;
+		//takes position of the maxima as argument and looks for the position of the beginning of the title,start with 1A
+		header_file.seekg(header_offset[position]);
 		header_file.read((char*)&reading, sizeof(uint8_t));
-	}
-	header_file.read((char*)&reading, sizeof(uint8_t));
-	//look for the end position of the title, ends with 0000
-	while(reading!=uint8_t(0x0000)){
+		while(reading!=uint8_t(0x1A)){
+			header_file.read((char*)&reading, sizeof(uint8_t));
+		}
 		header_file.read((char*)&reading, sizeof(uint8_t));
-		cout << reading;
+		//look for the end position of the title, ends with 0000
+		while(reading!=uint8_t(0x0000)){
+			header_file.read((char*)&reading, sizeof(uint8_t));
+			cout << reading;
+		}
+		header_file.seekg(0,ios::beg);
 		
+		
+		i=0; //on réinitialise i à 0
+		tableau[position] = 0; //on met l'élément à cette position à 0 pour ne plus le considérer dans la suite
+		reading=0;
 	}
 	cout << endl;
 	duration = (clock() - start ) / (double) CLOCKS_PER_SEC;
     cout<<"duration of algorithm : "<< duration << endl;
-*/
+
 	return 0;
 }
