@@ -5,9 +5,9 @@ using namespace std;
 class Matrice
 {
 private:
-	string matrice_file; //fichier donnant la matrice BLOSUM
+	string matrice_file; //file giving the matrix BLOSUM
 	
 public:
-	Matrice(string matrice_file); //constructeur
+	Matrice(string matrice_file);
 	int** matrice_score();
 };
