@@ -9,7 +9,6 @@ class Algo {
 private:
 	vector<int8_t> query;
 	int8_t* db;
-	int* score;
 	int32_t* offset;
 	int n;
 	int size;
@@ -20,4 +19,5 @@ private:
 public:
 	Algo(int8_t* db,vector<int8_t> query,int size_score, int32_t* psq_offset,int** arg, int open, int ext); //constructeur	
 	void sw();
+	int* score;
 };

@@ -22,7 +22,7 @@ void Algo::sw(){
 	int R=ext;
 
 	// parse the whole database
-	for (int ind =0; ind<(size) ;ind++){
+	for (int ind =0; ind<(size-1) ;ind++){
 		
 		// m is the size of the protein we are analyzing in the database
 		m=offset[ind+1]-offset[ind]-1;
@@ -48,7 +48,7 @@ void Algo::sw(){
 			Hv=0;
 			for(int j = 1; j < m+1 ; j++){
 				int8_t b = db[offset[ind]+j-1];
-				int8_t q = query[i-1];
+				//int8_t q = query[i-1];
 				Hdiag=H[j-1]; // the value of the diagonal is the value of the array of the previous column, one line higher
 				if((E+R)>(Hv+Q)){
 					E=E+R;
@@ -56,11 +56,11 @@ void Algo::sw(){
 				else{
 				 	E=Hv+Q; 
 				}
-				if ((F[j-1]+R)>(H[j-1]+Q)){
+				if ((F[j-1]+R)>(H[j]+Q)){
 					F[j]= F[j-1]+R;
 				}
 				else{
-					F[j]=H[j-1]+Q;
+					F[j]=H[j]+Q;
 				}
 				// we create a coord type, which will give us the score between two proteins
 				Coord* coord = new Coord(query[i-1],b,arg_blosum);
