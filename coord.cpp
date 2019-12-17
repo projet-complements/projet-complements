@@ -171,14 +171,11 @@ int Coord::coord_conversionY(){
 	return coordY;
 }
 
-int Coord::score() //function the returning the score found in the substitution matrix
+int Coord::score() //function returning the score found in the substitution matrix at the position (X,Y)
 {	
-	int coordX = coord_conversionX(); //on applique les fonctions de conversion pour convertir les coord en int8 en coord de int tout simple
-	cout << "coordX " << coordX << endl;
+	int coordX = coord_conversionX(); 
 	int coordY = coord_conversionY();
-	cout << "coordY " << coordY << endl;
-	int score = matrice[coordX][coordY]; //le score est la valeur trouvée à la position donnée par les coord dans la matrice de substitution
-	cout <<"score " << score << endl;
+	int score = matrice[coordX][coordY]; 
 	return score;
 
 }
