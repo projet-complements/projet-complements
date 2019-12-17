@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 		queryv.push_back(bit); 
 	}
 	
-	int8_t* query = &queryv[0];
+	int8_t* query = &queryv[0]; //si pas ancien enlever
 	query_file.close();
 
 	// open the index file to find the title position of the sequence
@@ -180,11 +180,25 @@ int main(int argc, char *argv[])
 	Matrice* matrix = new Matrice(arg_blosum);
 	int** M = matrix->matrice_score();
 	cout << "matrice crée" << endl;
-	Algo* algo = new Algo(db, query, nbseq, sequence_offset, M , open_penalty, ext_penalty); //nbseq db=int8*, query=int8*, 10=int32, sequenceoffset=int32, M=int**, int, int
+	Algo* algo = new Algo(db, query, nbseq, sequence_offset, M , open_penalty, ext_penalty); //nbseq+1 queryv
 	// we do the Watermann Smith algorithm
-	algo->sw();
+	int* tableau = algo->sw();
 	cout << "l'algo est fini"<<endl;
 	
+	ofstream result;
+	result.open("results.txt");
+	result << "Database name: ";
+	for(int i=0;i<title_length;i++){
+		result << " " << title[i];
+	}
+	result << endl;
+	result << "Database time: ";
+	for(int i=0; i<timestp_length-2; i++){
+		result << " "<< timestp[i];
+	}
+	result << endl;
+	result << "Query name: " << argv[1] << endl;
+	result << "Query size: " << algo->n << endl;
 	
 	string argv4 = argv[2];
 	argv4+=".phr";
@@ -195,39 +209,25 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 	//boucle pour trouver les 30 premiers max dans le tableau score défini dans algo
-	int taille = nbseq; //nbseq+1
-	int* tableau_score = algo->score;
-	int tableau[taille] = {*tableau_score}; // !!JAI DU METTRE DANS ALGO TYPE DU SCORE À INT AU LIEU DE INT* ET EN PUBLIC AU LIEU DE PRIVATE
-	int max = tableau[0]; //on pose le max étant le 1er élément du tableau
-	cout << "max " << max << endl;
-	int position;
-	int i=0;
-	int8_t reading;
+	//int* tableau = {algo->score};
+	//int* tableau[taille] = {*tableau_score}; // !!JAI DU METTRE DANS ALGO TYPE DU SCORE À INT AU LIEU DE INT* ET EN PUBLIC AU LIEU DE PRIVATE
+	
+	int taille(nbseq); //nbseq+1
+	
 	for(int nbremax=0; nbremax<30;){ //on veut les 30 premiers max
-		for (i; i < taille; i++){ //on parcourt tout le tableau
+		int max = 0; //on pose le max étant le 1er élément du tableau
+		int position=0;
+		int8_t reading;
+		for (int i=0; i < taille; i++){ //on parcourt tout le tableau
 			if(max < tableau[i]){ //si on trouve un nouveau max
 				max = tableau[i]; //max est cet élément-là
 				position = i; //la position du max est donc la position de cet élément
 			}
-			else if(max = tableau[i]){ //si le max est = à l'élément considéré c'est qu'il est à la position 0
-				max = tableau[0];
-				position = 0;
-			}
 		}
 		nbremax ++;
 		cout << endl << "maximum" << nbremax << ":" << max << " à la position " << position << endl;
-		if(position==0){
-			max = tableau[position+1]; //si le max était à la position 0, on pose mnt le max à l'élément 1 sinon on reste coincé dans la boucle
-			cout << "test hello" << endl;
-			cout << "nouveau max" << max << endl;
-		}
-		else{
-			max = tableau[0]; //dans le cas contraire, on pose tjs le max étant le 1er élément
-			cout << "test coucou" << endl;
-		}
-
+		tableau[position] = 0; //on met l'élément à cette position à 0 pour ne plus le considérer dans la suite
 		//avec les positions des max on retrouve les protéines dans le fichier
-		//int8_t reading;
 		//takes position of the maxima as argument and looks for the position of the beginning of the title,start with 1A
 		header_file.seekg(header_offset[position]);
 		header_file.read((char*)&reading, sizeof(uint8_t));
@@ -239,15 +239,11 @@ int main(int argc, char *argv[])
 		while(reading!=uint8_t(0x0000)){
 			header_file.read((char*)&reading, sizeof(uint8_t));
 			cout << reading;
+			//result << reading;
 		}
-		header_file.seekg(0,ios::beg);
-		
-		
-		i=0; //on réinitialise i à 0
-		tableau[position] = 0; //on met l'élément à cette position à 0 pour ne plus le considérer dans la suite
-		reading=0;
 	}
 	cout << endl;
+	result << endl;
 	duration = (clock() - start ) / (double) CLOCKS_PER_SEC;
     cout<<"duration of algorithm : "<< duration << endl;
 
