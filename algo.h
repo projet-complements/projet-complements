@@ -7,7 +7,7 @@ using namespace std;
 
 class Algo {
 private:
-	int8_t* query;
+	vector<int8_t> query;
 	int8_t* db;
 	int32_t* offset;
 	int size;
@@ -16,7 +16,8 @@ private:
 	int ext;
 	
 public:
-	int n;
-	Algo(int8_t* db,int8_t* query,int size_score, int32_t* psq_offset,int** arg, int open, int ext);
+	Algo(int8_t* db,vector<int8_t> query,int size_score, int32_t* psq_offset,int** arg, int open, int ext); //constructeur	
 	int* sw();
+	int* score;
+	int n;
 };
