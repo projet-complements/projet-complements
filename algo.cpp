@@ -24,7 +24,7 @@ int* Algo::sw(){
 	// parse the whole database
 	for (int ind=0; ind<(size) ;ind++){
 		index=ind;
-		m=offset[index+1]-offset[index]; //SINON INDEX+1 ET INDEX
+		m=offset[index+1]-offset[index];
 		/*b = 10; //donne une valeur différente de 0
 		//on stocke la sequence qu'on regarde dans tmp
 		int tmp[m]; 
@@ -37,7 +37,13 @@ int* Algo::sw(){
 		//cout <<"taille de la seq " << sizeof(tmp) << endl;
 		// initialize matrix to 0
 		//int H[n+1][m+1] = {0};
-		vector<vector<int>> H(n+1, vector<int>(m+1,0));
+		int** H = new int*[n+1];
+		for(int i=0; i<n+1; i++){
+			H[i] = new int[m+1];
+			for(int j=0; j<m+1; j++)
+				H[i][j] = 0;
+		}
+		//vector<vector<int>> H(n+1, vector<int>(m+1,0));
 		int length_h=1;
 		int length_v=1;
 		int penalty_gaph=open+(length_h*ext);
@@ -87,11 +93,12 @@ int* Algo::sw(){
 				if (H[i][j]>score[index]){
 					score[index]=H[i][j];
 				}
+				delete coord;
 				}
 				j++;
 			}
 		}
-	
+		delete (H);
 
 	}
 			

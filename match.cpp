@@ -198,7 +198,7 @@ int main(int argc, char *argv[])
 	}
 	result << endl;
 	result << "Query name: " << argv[1] << endl;
-	result << "Query size: " << algo->n << endl;
+	result << "Query size: " << sizeof(query)<< endl;
 	
 	string argv4 = argv[2];
 	argv4+=".phr";
@@ -226,6 +226,7 @@ int main(int argc, char *argv[])
 		}
 		nbremax ++;
 		cout << endl << "maximum" << nbremax << ":" << max << " à la position " << position << endl;
+		result << endl << "maximum" << nbremax << " score: " << max << endl;
 		tableau[position] = 0; //on met l'élément à cette position à 0 pour ne plus le considérer dans la suite
 		//avec les positions des max on retrouve les protéines dans le fichier
 		//takes position of the maxima as argument and looks for the position of the beginning of the title,start with 1A
@@ -239,8 +240,9 @@ int main(int argc, char *argv[])
 		while(reading!=uint8_t(0x0000)){
 			header_file.read((char*)&reading, sizeof(uint8_t));
 			cout << reading;
-			//result << reading;
+			result << (char)(reading);
 		}
+		//result << (char)(reading);
 	}
 	cout << endl;
 	result << endl;
