@@ -141,7 +141,6 @@ int main(int argc, char *argv[])
 	}
 	result << endl;
 	result << "Query name: " << argv[1] << endl;
-	result << "Query size: " << sizeof(query)<< endl;
 	
 	string argv4 = argv[2];
 	argv4+=".phr";
@@ -155,7 +154,7 @@ int main(int argc, char *argv[])
 	
 	int taille(nbseq);
 	
-	for(int nbremax=0; nbremax<30;){ // we want the 30 maximum
+	for(int nbremax=0; nbremax<10;){ // we want the 10 maximum
 		int max = 0; 
 		int position=0;
 		int8_t reading;
