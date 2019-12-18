@@ -4,6 +4,7 @@
 #include <vector>
 #include <cstdint>
 #include <byteswap.h>
+#include <sstream>
 #include "letter.h"
 #include "algo.h"
 #include "matrice.h"
@@ -12,26 +13,18 @@
 using namespace std;
 
 
-/* Program prints the name of the exact sequence in the database:equality test between the query and the whole database
- * Parameter: argv[1]=query (FASTA), argv[2]=database (BLAST)
- * defaut : BLOSUM62, gap open penalty 11,gap extension penalty 1
- * sinon : ajout de paramètres
-*/
-
 int8_t* setInArray(string fichier){
 	
 	ifstream database_file (fichier, ios::in | ios::binary);
 
-	//on recopie la database dans un tableau
-	database_file.seekg(0,ios_base::end); //on va a la dernière position dans le fichier sequence
-	int taille = database_file.tellg(); //on regarde où on est, ce qui nous donne la taille du tableau
+	// copy the database in an array
+	database_file.seekg(0,ios_base::end); // go to the last position
+	int taille = database_file.tellg(); // gives the size of the database
 	database_file.seekg(0,ios_base::beg);
 	int8_t *db;
-	db= new int8_t [taille]; //cree un tableau de bit
+	db= new int8_t [taille]; //creates array of int8_t
 	database_file.read((char*)&db[0], sizeof(int8_t)*(taille));
 	database_file.close();
-
-	
 	return db;
 }
 
@@ -43,7 +36,7 @@ int main(int argc, char *argv[])
     start = clock();
 	
 	// verify that we have 3 arguments, the name of the program and the 2 files
-	if (argc < 3) {
+	if (argc < 3){
 		printf("Error: need 2 arguments \n");
 		return 1;
 	}
@@ -73,8 +66,6 @@ int main(int argc, char *argv[])
 		bit = lettre->binary_conversion();
 		queryv.push_back(bit); 
 	}
-	
-	int8_t* query = &queryv[0]; //si pas ancien enlever
 	query_file.close();
 
 	// open the index file to find the title position of the sequence
@@ -140,22 +131,19 @@ int main(int argc, char *argv[])
 		sequence_offset[i] = __bswap_32(sequence_offset[i]);
 	}
 	index_file.close();
-
+	
 	// OPEN THE PSQ
-	//à faire : verifier que tout s'est bien passé
 	string argv3 = argv[2];
 	argv3+=".psq";
 	int8_t *db;
-	try {
-		db=setInArray(argv3);
-	} catch(std::bad_alloc & a) {
-		cout << "erreur bad alloc" << endl;
-	}
+	// set the database in an Array
+	db=setInArray(argv3);
+
 	
-	//verifie s'il y a un argument, sinon prend celui par défaut
+	// verify if there are arguments, else it takes the default one
 	string arg_blosum;
 	if (argc<4){
-		arg_blosum="BLOSUM62.txt";
+		arg_blosum="BLOSUM62";
 	}
 	else {
 		arg_blosum=argv[3];
@@ -177,13 +165,15 @@ int main(int argc, char *argv[])
 		ext_penalty=atoi(argv[5]);
 	}
 	
+	// creates a matrix type to have the blosum matrix
 	Matrice* matrix = new Matrice(arg_blosum);
 	int** M = matrix->matrice_score();
-	cout << "matrice crée" << endl;
-	Algo* algo = new Algo(db, query, nbseq, sequence_offset, M , open_penalty, ext_penalty); //nbseq+1 queryv
-	// we do the Watermann Smith algorithm
+	// creates a type algo, with the data needed as attribute
+	Algo* algo = new Algo(db, queryv, nbseq+1, sequence_offset, M , open_penalty, ext_penalty);
+	
+	// we do the Smith Watermann algorithm
 	int* tableau = algo->sw();
-	cout << "l'algo est fini"<<endl;
+	cout << "Algorithm is done"<<endl;
 	
 	ofstream result;
 	result.open("results.txt");
@@ -214,21 +204,20 @@ int main(int argc, char *argv[])
 	
 	int taille(nbseq); //nbseq+1
 	
-	for(int nbremax=0; nbremax<30;){ //on veut les 30 premiers max
-		int max = 0; //on pose le max étant le 1er élément du tableau
+	for(int nbremax=0; nbremax<30;){ // we want the 30 maximum
+		int max = 0; // suppose the first one is the max
 		int position=0;
 		int8_t reading;
-		for (int i=0; i < taille; i++){ //on parcourt tout le tableau
-			if(max < tableau[i]){ //si on trouve un nouveau max
-				max = tableau[i]; //max est cet élément-là
-				position = i; //la position du max est donc la position de cet élément
+		for (int i=0; i < taille; i++){ 
+			if(max < tableau[i]){ // if we find a new max in the score tab
+				max = tableau[i];
+				position = i; // gives the index of the maximum
 			}
 		}
 		nbremax ++;
-		cout << endl << "maximum" << nbremax << ":" << max << " à la position " << position << endl;
+		cout << endl << "maximum" << nbremax << ":" << max << endl;
 		result << endl << "maximum" << nbremax << " score: " << max << endl;
-		tableau[position] = 0; //on met l'élément à cette position à 0 pour ne plus le considérer dans la suite
-		//avec les positions des max on retrouve les protéines dans le fichier
+		tableau[position] = 0; // set the element to 0
 		//takes position of the maxima as argument and looks for the position of the beginning of the title,start with 1A
 		header_file.seekg(header_offset[position]);
 		header_file.read((char*)&reading, sizeof(uint8_t));
@@ -242,7 +231,7 @@ int main(int argc, char *argv[])
 			cout << reading;
 			result << (char)(reading);
 		}
-		//result << (char)(reading);
+
 	}
 	cout << endl;
 	result << endl;
