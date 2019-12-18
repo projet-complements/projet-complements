@@ -1,8 +1,8 @@
 #include "index.h"
 
 
-Index::Index(std::string argv2){
-
+Index::Index(std::string s){
+	string argv2 = s;
 	argv2+=".pin";
 	ifstream index_file (argv2, ios::in | ios::binary);
 	if( !index_file.is_open() )
@@ -11,6 +11,7 @@ Index::Index(std::string argv2){
 	}
 	index_file.read((char*)&version, sizeof(int32_t));
 	version = __bswap_32(version);
+	
 	// read the databasetype
 	index_file.read((char*)&database_type, sizeof(int32_t));
 	database_type= __bswap_32(database_type);
