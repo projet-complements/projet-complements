@@ -7,6 +7,7 @@
 #include <sstream>
 #include "letter.h"
 #include "algo.h"
+#include "index.h"
 #include "matrice.h"
 #include <stdlib.h>
 #include <ctime>   
@@ -71,79 +72,28 @@ int main(int argc, char *argv[])
 	int8_t* query = &queryv[0];
 	query_file.close();
 
-	// open the index file to find the title position of the sequence
-	string argv2 = argv[2];
-	argv2+=".pin";
-	ifstream index_file (argv2, ios::in | ios::binary);
-	if(!index_file.is_open())
-	{
-		cout << "Impossible to open the file" << endl;
-		return 1;
-	}
-	
-	// initialize the variables to save the information
-	int32_t version,database_type, title_length, timestp_length,nbseq, maxseq;
-	int64_t residuecount;
-
-	// read the version
-	index_file.read((char*)&version, sizeof(int32_t));
-	version = __bswap_32(version);
-	
-	// read the databasetype
-	index_file.read((char*)&database_type, sizeof(int32_t));
-	database_type= __bswap_32(database_type);
-	
-	// read the title length
-	index_file.read((char*)&title_length, sizeof(int32_t));
-	title_length =__bswap_32(title_length);
-	
-	// read title
-	char title[title_length];
-	index_file.read((char*)title, sizeof(char)*(title_length));
-	title[title_length]=0;
-	
-	// read the timestamp length
-	index_file.read((char*)&timestp_length, sizeof(int32_t));
-	timestp_length=__bswap_32(timestp_length);
-	
-	// read the timestamp 
-	char timestp[timestp_length];
-	index_file.read((char*)timestp, sizeof(char)*(timestp_length));
-	timestp[timestp_length]=0;
+	// Create index type which will give every information needed in the .pin
+	Index* index= new Index(argv[2]);
+	int32_t version= index->version;
+	int32_t database_type= index->database_type;
+	int32_t title_length= index->title_length;
+	int32_t timestp_length= index->timestp_length;
+	int32_t nbseq= index->nbseq;
+	int32_t maxseq= index->maxseq;
+	int64_t residuecount= index->residuecount;
+	char* title= index->title;
+	char* timestp= index->timestp;
+	int32_t* header_offset= index->header_offset;
+	int32_t* sequence_offset= index->sequence_offset;
 
 	
-	// read the number of sequences (N)
-	index_file.read((char*)&nbseq, sizeof(int32_t));
-	nbseq=__bswap_32(nbseq);
-	
-	// read the residue count
-	index_file.read((char*)&residuecount, sizeof(int64_t));
-	
-	// read the maximum sequence
-	index_file.read((char*)&maxseq, sizeof(int32_t));
-	maxseq=__bswap_32(maxseq);
-	
-	// read the offsets
-	int32_t header_offset[nbseq+1];
-	int32_t sequence_offset[nbseq+1];
-
-	index_file.read((char*)&header_offset[0], sizeof(int32_t)*(nbseq+1));
-	index_file.read((char*)&sequence_offset[0], sizeof(int32_t)*(nbseq+1));
-	for(int i = 0; i < nbseq+1; i++){
-		header_offset[i] = __bswap_32(header_offset[i]);
-		sequence_offset[i] = __bswap_32(sequence_offset[i]);
-	}
-	index_file.close();
-
-	// OPEN THE PSQ
+	// Open the .psq
 	string argv3 = argv[2];
 	argv3+=".psq";
 	int8_t *db;
-	try {
-		db=setInArray(argv3);
-	} catch(std::bad_alloc & a) {
-		cout << "erreur bad alloc" << endl;
-	}
+	// set the database in an Array
+	db=setInArray(argv3);
+	
 	
 	// verify if there are arguments, else it takes the default one
 	string arg_blosum;
