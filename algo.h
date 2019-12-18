@@ -10,7 +10,6 @@ private:
 	int8_t* query;
 	int8_t* db;
 	int32_t* offset;
-	//int n;
 	int size;
 	int** arg_blosum;
 	int open;
