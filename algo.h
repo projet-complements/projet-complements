@@ -17,6 +17,6 @@ private:
 	
 public:
 	int n;
-	Algo(int8_t* db,int8_t* query,int size_score, int32_t* psq_offset,int** arg, int open, int ext); //constructeur	
+	Algo(int8_t* db,int8_t* query,int size_score, int32_t* psq_offset,int** arg, int open, int ext);
 	int* sw();
 };
