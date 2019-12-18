@@ -68,8 +68,6 @@ int main(int argc, char *argv[])
 		bit = lettre->binary_conversion();
 		queryv.push_back(bit); 
 	}
-	
-	int8_t* query = &queryv[0];
 	query_file.close();
 
 	// Create index type which will give every information needed in the .pin
@@ -124,7 +122,7 @@ int main(int argc, char *argv[])
 	Matrice* matrix = new Matrice(arg_blosum);
 	int** M = matrix->matrice_score();
 	// creates a type algo, with the data needed as attribute
-	Algo* algo = new Algo(db, query, nbseq, sequence_offset, M , open_penalty, ext_penalty);
+	Algo* algo = new Algo(db, queryv, nbseq, sequence_offset, M , open_penalty, ext_penalty);
 	
 	// we do the Watermann Smith algorithm
 	int* tableau = algo->sw();
