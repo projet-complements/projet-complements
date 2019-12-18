@@ -12,7 +12,6 @@
 #include <ctime>   
 using namespace std;
 
-
 int8_t* setInArray(string fichier){
 	
 	ifstream database_file (fichier, ios::in | ios::binary);
@@ -25,6 +24,8 @@ int8_t* setInArray(string fichier){
 	db= new int8_t [taille]; //creates array of int8_t
 	database_file.read((char*)&db[0], sizeof(int8_t)*(taille));
 	database_file.close();
+
+	
 	return db;
 }
 
@@ -36,7 +37,7 @@ int main(int argc, char *argv[])
     start = clock();
 	
 	// verify that we have 3 arguments, the name of the program and the 2 files
-	if (argc < 3){
+	if (argc < 3) {
 		printf("Error: need 2 arguments \n");
 		return 1;
 	}
@@ -66,6 +67,8 @@ int main(int argc, char *argv[])
 		bit = lettre->binary_conversion();
 		queryv.push_back(bit); 
 	}
+	
+	int8_t* query = &queryv[0];
 	query_file.close();
 
 	// open the index file to find the title position of the sequence
@@ -131,14 +134,16 @@ int main(int argc, char *argv[])
 		sequence_offset[i] = __bswap_32(sequence_offset[i]);
 	}
 	index_file.close();
-	
+
 	// OPEN THE PSQ
 	string argv3 = argv[2];
 	argv3+=".psq";
 	int8_t *db;
-	// set the database in an Array
-	db=setInArray(argv3);
-
+	try {
+		db=setInArray(argv3);
+	} catch(std::bad_alloc & a) {
+		cout << "erreur bad alloc" << endl;
+	}
 	
 	// verify if there are arguments, else it takes the default one
 	string arg_blosum;
@@ -169,9 +174,9 @@ int main(int argc, char *argv[])
 	Matrice* matrix = new Matrice(arg_blosum);
 	int** M = matrix->matrice_score();
 	// creates a type algo, with the data needed as attribute
-	Algo* algo = new Algo(db, queryv, nbseq+1, sequence_offset, M , open_penalty, ext_penalty);
+	Algo* algo = new Algo(db, query, nbseq, sequence_offset, M , open_penalty, ext_penalty);
 	
-	// we do the Smith Watermann algorithm
+	// we do the Watermann Smith algorithm
 	int* tableau = algo->sw();
 	cout << "Algorithm is done"<<endl;
 	
@@ -198,27 +203,26 @@ int main(int argc, char *argv[])
 		cout << "Impossible to open the file" << endl;
 		return 1;
 	}
-	//boucle pour trouver les 30 premiers max dans le tableau score défini dans algo
-	//int* tableau = {algo->score};
-	//int* tableau[taille] = {*tableau_score}; // !!JAI DU METTRE DANS ALGO TYPE DU SCORE À INT AU LIEU DE INT* ET EN PUBLIC AU LIEU DE PRIVATE
 	
-	int taille(nbseq); //nbseq+1
+	
+	int taille(nbseq);
 	
 	for(int nbremax=0; nbremax<30;){ // we want the 30 maximum
-		int max = 0; // suppose the first one is the max
+		int max = 0; 
 		int position=0;
 		int8_t reading;
 		for (int i=0; i < taille; i++){ 
 			if(max < tableau[i]){ // if we find a new max in the score tab
-				max = tableau[i];
+				max = tableau[i]; 
 				position = i; // gives the index of the maximum
 			}
 		}
 		nbremax ++;
-		cout << endl << "maximum" << nbremax << ":" << max << endl;
+		cout << endl << "maximum" << nbremax << ":" << max << " at position " << position << endl;
 		result << endl << "maximum" << nbremax << " score: " << max << endl;
-		tableau[position] = 0; // set the element to 0
-		//takes position of the maxima as argument and looks for the position of the beginning of the title,start with 1A
+		tableau[position] = 0; // set the element at 0
+		
+		//takes position of the maximum as argument and looks for the position of the beginning of the title, starting with 1A
 		header_file.seekg(header_offset[position]);
 		header_file.read((char*)&reading, sizeof(uint8_t));
 		while(reading!=uint8_t(0x1A)){
@@ -231,7 +235,6 @@ int main(int argc, char *argv[])
 			cout << reading;
 			result << (char)(reading);
 		}
-
 	}
 	cout << endl;
 	result << endl;
