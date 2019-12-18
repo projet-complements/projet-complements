@@ -11,6 +11,6 @@ On crée alors un objet "algo", qui prend en paramètre la database, la query, l
 ainsi, on peut trouver les scores pour toutes les séquences, contenu dans un tableau qui est un attribut de l'objet "algo".
 Les indices du tableau score sont les mêmes que ceux utilisés dans les offsets, ce qui lie les offsets de .psq et .phr
 
-On cherche ensuite les 10 maximums dans le tableau score et on les affiche, en gardant leur indice pour trouver l'offset.
+On cherche ensuite les 10 maximums dans le tableau score et on les affiche, aussi bien avec des cout que dans un fichier txt (results.txt), en gardant leur indice pour trouver l'offset.
 
-Neanmoins, il est a noter que notre code marche pour une database réduite mais prend énormément de temps pour la database complète.
+Néanmoins, il est à noter que notre code marche pour une database réduite (newE.fasta) mais prend énormément de temps pour la database complète.
