@@ -4,7 +4,6 @@ Algo::Algo(int8_t* database,vector<int8_t> q,int size_score, int32_t* psq_offset
 	query = q;
 	db = database;
 	n=query.size();
-	cout<< n<< endl;
 	size=size_score;
 	offset=psq_offset;
 	arg_blosum=arg;
