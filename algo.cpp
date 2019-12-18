@@ -136,11 +136,11 @@ int* Algo::sw(){
 				}
 				res1=E;
 				
-				if ((F[j]-R)>(Hdiag-Q)){
+				if ((F[j]-R)>(H[j]-Q)){
 					F[j]=F[j]-R;
 				}
 				else{
-					F[j]=Hdiag-Q;
+					F[j]=H[j]-Q;
 				}
 				res3=F[j];
 				
