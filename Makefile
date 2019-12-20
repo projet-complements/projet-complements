@@ -1,5 +1,5 @@
-all: letter.o coord.o algo.o matrice.o match.cpp
-	g++ -o match match.cpp letter.o coord.o algo.o matrice.o -O3
+all: letter.o coord.o algo.o matrice.o index.o match.cpp
+	g++ -o match match.cpp letter.o coord.o algo.o matrice.o index.o -O3
 
 
 letter.o: letter.cpp
@@ -13,6 +13,9 @@ coord.o: coord.cpp
 
 matrice.o: matrice.cpp
 	g++ -c matrice.cpp
+	
+index.o: index.cpp
+	g++ -c index.cpp
 
 clear:
 	rm *.o
